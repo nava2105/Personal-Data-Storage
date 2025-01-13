@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class DtoRegisterPersonalData:
+class DtoPersonalData:
     def __init__(self, birth_date, height, weight, body_structure):
         self.birth_date = birth_date
         self.height = height
@@ -23,6 +23,6 @@ class DtoRegisterPersonalData:
             if not body_structure:
                 raise ValueError("body_structure is required")
 
-            return DtoRegisterPersonalData(birth_date, height, weight, body_structure)
+            return DtoPersonalData(birth_date, height, weight, body_structure)
         except (ValueError, TypeError) as e:
             raise ValueError(f"Invalid personal data: {e}")
