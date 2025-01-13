@@ -1,4 +1,4 @@
-from sqlalchemy import Table, MetaData, select, update
+from sqlalchemy import Table, MetaData, select, update, insert
 
 
 class PersonalDataRepository:

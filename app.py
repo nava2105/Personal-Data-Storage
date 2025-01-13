@@ -8,6 +8,7 @@ import os
 from models.UsersModel import UsersModel
 from models.PersonalDataModel import PersonalDataModel
 from dtos.DtoPersonalData import DtoPersonalData
+from services.AuthService import AuthService
 
 app = Flask(__name__)
 
@@ -43,18 +44,15 @@ def home():
 @app.route('/register/personal/data', methods=['POST'])
 def register_personal_data():
     """Endpoint to register personal data for a user."""
+    auth_header = request.headers.get('Authorization')
+    user_id, dto, existing_personal_data, error_response = AuthService.get_user_and_personal_data(auth_header, request, db_factory)
+    if error_response:
+        return error_response, 400
+    if existing_personal_data:
+        return jsonify({"error": "Personal data is already registered for this user"}), 401
     try:
-        user_id = authenticate_user(request.headers.get('Authorization'))
-        data = request.get_json()
-        try:
-            dto = DtoPersonalData.from_json(data)
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 400
-        personal_data_repository = db_factory.get_personal_data_repository()
-        existing_personal_data = personal_data_repository.get_personal_data_by_user_id(user_id)
-        if existing_personal_data:
-            return jsonify({"error": "Personal data is already registered for this user"}), 400
         with app.app_context():
+            personal_data_repository = db_factory.get_personal_data_repository()
             personal_data_repository.create_personal_data(
                 user_id=user_id,
                 birth_date=dto.birth_date,
@@ -69,18 +67,15 @@ def register_personal_data():
 @app.route('/modify/personal/data', methods=['POST'])
 def modify_personal_data():
     """Endpoint to modify personal data for a user."""
+    auth_header = request.headers.get('Authorization')
+    user_id, dto, existing_personal_data, error_response = AuthService.get_user_and_personal_data(auth_header, request, db_factory)
+    if error_response:
+        return error_response, 401
+    if not existing_personal_data:
+        return jsonify({"error": "Personal data is not registered for this user"}), 400
     try:
-        user_id = authenticate_user(request.headers.get('Authorization'))
-        data = request.get_json()
-        try:
-            dto = DtoPersonalData.from_json(data)
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 400
-        personal_data_repository = db_factory.get_personal_data_repository()
-        existing_personal_data = personal_data_repository.get_personal_data_by_user_id(user_id)
-        if not existing_personal_data:
-            return jsonify({"error": "Personal data is not registered for this user"}), 400
         with app.app_context():
+            personal_data_repository = db_factory.get_personal_data_repository()
             personal_data_repository.update_personal_data(
                 user_id=user_id,
                 birth_date=dto.birth_date,
@@ -91,19 +86,6 @@ def modify_personal_data():
         return jsonify({"message": "Personal data modified successfully"}), 201
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-
-def authenticate_user(auth_header):
-    """Authenticate user and return user_id."""
-    if not auth_header:
-        raise Exception("Authorization header is required")
-    auth_url = os.getenv('AUTH_URL')
-    response = requests.get(f"{auth_url}/user_id/token", headers={"Authorization": auth_header})
-    if response.status_code != 200:
-        raise Exception("Invalid authorization")
-    user_id = response.json().get('userId')
-    if not user_id:
-        raise Exception("User ID not found in token response")
-    return user_id
 
 
 if __name__ == '__main__':
