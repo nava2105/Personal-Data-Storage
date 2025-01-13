@@ -87,6 +87,19 @@ def modify_personal_data():
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
+@app.route('/get/personal/data', methods=['GET'])
+def get_personal_data():
+    """Endpoint to get personal data for a user."""
+    auth_header = request.headers.get('Authorization')
+    try:
+        user_id = AuthService.authenticate_user(auth_header)
+        personal_data_repository = db_factory.get_personal_data_repository()
+        existing_personal_data = personal_data_repository.get_personal_data_by_user_id(user_id)
+        print(existing_personal_data)
+        return jsonify(existing_personal_data[0])
+    except Exception as e:
+        return jsonify({"error": e}), 400
+
 
 if __name__ == '__main__':
     with app.app_context():

@@ -12,8 +12,7 @@
 3. [Technologies](#technologies)
 4. [Installation](#installation)
 5. [Usage](#usage)
-6. [API Endpoints](#api-endpoints)
-7. [Database Schema](#database-schema)
+6. [Database Schema](#database-schema)
 
 ---
 
@@ -87,42 +86,83 @@ This project is a backend API for managing and storing user personal data secure
    ```bash
    flask db upgrade
    ```
+   
+7. Start the Flask development server:
+   ```bash
+   python app.py
+   ```
+
+8. Access the API at `http://localhost:5000`.
 
 ---
 
 ## Usage
 
-### Run the Application:
-1. Start the Flask development server:
-   ```bash
-   python app.py
-   ```
+Once the application is up and running, you can interact with the API by performing proper requests:
 
-2. Access the API at `http://localhost:5000`.
-
-### Example Workflow:
-- Use an **Authorization header** with a JWT token obtained from the external authentication service to interact with authenticated endpoints.
-
-### External Authentication Call Example:
-- Send the Authorization header with your JWT token to the `/` route:
-  ```bash
-  curl -H "Authorization: Bearer <your_jwt_token>" http://localhost:5000/
+### Register Personal Data:
+- Endpoint: `/register/personal/data`
+- Headers:
   ```
-  This retrieves the user data for the authenticated user.
+  Authorization: Bearer your_jwt_token
+  ```
+- Payload:
+  ```json
+  {
+    "birth_date": "user's birth date YYYY-MM-DD",
+    "height": "user's height",
+    "weight": "user's weight",
+    "body_structure": "user's body structure"
+  }
+  ```
 
+### Modify Personal Data:
+- Endpoint: `/modify/personal/data`
+- Headers:
+  ```
+  Authorization: Bearer your_jwt_token
+  ```
+- Payload:
+  ```json
+  {
+    "birth_date": "user's birth date YYYY-MM-DD",
+    "height": "user's height",
+    "weight": "user's weight",
+    "body_structure": "user's body structure"
+  }
+  ```
+
+### Get Personal Data:
+- Endpoint: `/get/personal/data`
+- Headers:
+  ```
+  Authorization: Bearer your_jwt_token
+  ```
+- Payload:
+  ```json
+  {}
+  ```
+  
 ---
 
-## API Endpoints
+## Endpoints
+Below is a comprehensive list of the endpoints included in the project:
 
-### Base URL: `http://localhost:5000`
+### Protected Endpoints (Authentication Required)
+- **Register Personal Data**
+  - `POST /register/personal/data`
+  - Allows users to register their personal data, their user code is retrieved from the auth api.
+  - Requires the JWT.
 
-#### Public Routes:
-- `GET /`  
-  - Home route to validate token and return user-specific data.
+- **Modify Personal Data**
+  - `POST /modify/personal/data`
+  - Allows users to modify their personal data, their user code is retrieved from the auth api.
+  - Requires the JWT.
 
-#### User Management:
-- `GET /users`:  
-  - Returns a list of all users in the database.
+- **Get Personal Data**
+  - `GET /get/personal/data`
+  - Allows users to consult their personal data, their user code is retrieved from the auth api.
+  - Requires the JWT.
 
 ---
 
@@ -140,14 +180,14 @@ Below is the database schema used in this project:
 | `password`  | String         | Hashed password          |
 
 #### `personal_data` Table:
-| **Column**         | **Type**       | **Description**                                                   |
-|---------------------|----------------|-------------------------------------------------------------------|
-| `personal_data_id`  | BigInteger     | Primary Key                                                      |
-| `user_id`           | BigInteger     | Foreign Key referencing `user.user_id`                           |
-| `age`               | Integer        | Age of the user                                                  |
-| `height`            | Double         | Height of the user (in meters)                                   |
-| `weight`            | Double         | Weight of the user (in kilograms)                                |
-| `body_structure`    | String         | Description of the user's body structure (e.g., Lean, Athletic)  |
+| **Column**         | **Type**   | **Description**                                                 |
+|--------------------|------------|-----------------------------------------------------------------|
+| `personal_data_id` | BigInteger | Primary Key                                                     |
+| `user_id`          | BigInteger | Foreign Key referencing `user.user_id`                          |
+| `age`              | Integer    | Age of the user                                                 |
+| `height`           | Double     | Height of the user (in meters)                                  |
+| `weight`           | Double     | Weight of the user (in kilograms)                               |
+| `body_structure`   | String     | Description of the user's body structure (e.g., Lean, Athletic) |
 
 ---
 
