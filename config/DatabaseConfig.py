@@ -1,6 +1,6 @@
 import os
 
-from utils.db import db
+from utils.Database import db
 from dotenv import load_dotenv
 
 load_dotenv()

@@ -1,8 +1,8 @@
 from sqlalchemy import Column, BigInteger, String
-from utils.db import db
+from utils.Database import db
 
 
-class UserModel(db.Model):
+class UsersModel(db.Model):
     __tablename__ = 'user'
 
     class User(db.Model):
