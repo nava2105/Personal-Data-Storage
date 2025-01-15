@@ -21,6 +21,7 @@ class PersonalDataRepository:
             personal_data_table = Table('personal_data', self.metadata, autoload_with=self.db.engine)
             query = select(personal_data_table)
             results = connection.execute(query)
+            connection.commit()
 
         return PersonalDataRepository.map_personal_data_to_dict(self, results)
 
@@ -30,6 +31,7 @@ class PersonalDataRepository:
             personal_data_table = Table('personal_data', self.metadata, autoload_with=self.db.engine)
             query = select(personal_data_table).where(personal_data_table.c.user_id == user_id)
             results = connection.execute(query)
+            connection.commit()
 
         return PersonalDataRepository.map_personal_data_to_dict(self, results)
 
