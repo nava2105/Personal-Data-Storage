@@ -56,7 +56,7 @@ This project is a backend API for managing and storing user personal data secure
 3. **Environment Setup**:
    - Clone this repository:
      ```bash
-     git clone https://github.com/your-username/Personal-Data-Storage.git
+     git clone https://github.com/nava2105/Personal-Data-Storage.git
      cd Personal-Data-Storage
      ```
 
